@@ -17,4 +17,4 @@ def follow_explore():
     ig.like_photo()
     ig.closeBrowser()
 if __name__ == '__main__':
-	app.run(port=5000,debug=True)
+	app.run(port=8000,debug=True)

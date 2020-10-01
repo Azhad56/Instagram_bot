@@ -13,20 +13,20 @@ class InstagramBot:
 
     def __init__(self, username, password):
         #For heroku
-        chrome_options = webdriver.ChromeOptions()
-        chrome_options.binary_location = os.environ.get("GOOGLE_CHROME_BIN")
-        chrome_options.add_argument("--headless")
-        chrome_options.add_argument("--disable-dev-shm-usage")
-        chrome_options.add_argument("--no-sandbox")
-        self.driver = webdriver.Chrome(executable_path=os.environ.get("CHROMEDRIVER_PATH"), chrome_options=chrome_options)
+        # chrome_options = webdriver.ChromeOptions()
+        # chrome_options.binary_location = os.environ.get("GOOGLE_CHROME_BIN")
+        # chrome_options.add_argument("--headless")
+        # chrome_options.add_argument("--disable-dev-shm-usage")
+        # chrome_options.add_argument("--no-sandbox")
+        # self.driver = webdriver.Chrome(executable_path=os.environ.get("CHROMEDRIVER_PATH"), chrome_options=chrome_options)
         #for localhost
-        # opts = Options()
-        # opts.set_headless()
-        # assert opts.headless
+        opts = Options()
+        opts.set_headless()
+        assert opts.headless
         self.username = username
         self.password = password
         self.unfollowed = 0
-        # self.driver = webdriver.Firefox(options=opts)
+        self.driver = webdriver.Chrome()
 
     def closeBrowser(self):
         self.driver.close()
@@ -35,6 +35,7 @@ class InstagramBot:
         driver = self.driver
         driver.get("https://www.instagram.com/")
         time.sleep(2)
+        driver.maximize_window()
         user_name_elem = driver.find_element_by_xpath("//input[@name='username']")
         user_name_elem.clear()
         user_name_elem.send_keys(self.username)
@@ -66,21 +67,21 @@ class InstagramBot:
             print("Total number of user to be Followed",len(pic_hrefs))
             for pic in pic_hrefs:
                 driver.get(pic)
-                driver.execute_script("window.scrollTo(0, document.body.scrollHeight);")
-                try:
-                    driver.find_element_by_xpath("//*[@aria-label='Like']").click()
-                    like_count +=1
-                    print("Liked : ",like_count)
-                    time.sleep(2)
-                except Exception as e:
-                    time.sleep(2)
-                try:
-                    driver.find_element_by_xpath("//button[text()='Follow']").click()
-                    follow_count +=1
-                    print("Followed : ",follow_count)
-                    time.sleep(10)
-                except Exception as e:
-                    time.sleep(2)
+                # driver.execute_script("window.scrollTo(0, document.body.scrollHeight);")
+
+                #Getting Follow button and clicking onto it
+
+                driver.find_element_by_xpath("//*[@aria-label='Like']").click()
+                like_count +=1
+                print("Liked : ",like_count)
+                time.sleep(4)
+
+                #Getting Follow button and clicking onto it
+
+                driver.find_element_by_xpath("//button[text()='Follow']").click()
+                follow_count +=1
+                print("Followed : ",follow_count)
+                time.sleep(8)
     def unfollow_all(self):
         driver = self.driver
         driver.get("https://www.instagram.com/" + self.username + "/")
@@ -134,13 +135,3 @@ class InstagramBot:
             driver.find_element_by_xpath("/html/body/div[4]/div/div/div[1]/div/div[2]/button").click() #window closed
             time.sleep(30)
             self.unfollow_all()
-if __name__ == "__main__":
-
-    username = "azhad.ghufran"
-    password = "Dabkdi814126"
-
-    ig = InstagramBot(username, password)
-    ig.login()
-    ig.find_username()
-    ig.unfollow_all()
-    ig.closeBrowser()
